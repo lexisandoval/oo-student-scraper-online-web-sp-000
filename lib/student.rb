@@ -4,44 +4,27 @@ class Student
 
   @@all = []
 
-  def self.scrape_index_page(index_url) #scraping the index page that lists all the students
-
-    doc = Nokogiri::HTML(open("https://learn-co-curriculum.github.io/student-scraper-test-page/index.html"))
-    students = []
-
-      doc.css(".student-card").each do |student|
-        students_info = {}
-        students_info[:name] = student.css("h4.student-name").text
-        students_info[:location] = student.css("p.student-location").text
-        students_info[:profile_url] = student.css("a").attribute("href").value
-        students << students_info
-      end
-    students
+  def initialize(student_hash)
+    student_hash.each do |key, value| 
+      self.send(("#{key}="), value)
+    end
+    @@all << self
   end
 
+  def self.create_from_collection(students_array)
+    students_array.each do |student_hash|
+      self.new(student_hash)
+    end
+  end
 
-
-
-    def self.scrape_profile_page(profile_url)
-        student_profile = {}
-        html = open(profile_url)
-        profile = Nokogiri::HTML(html)
-
-        profile.css("div.main-wrapper.profile .social-icon-container a").each do |social|
-          if social.attribute("href").value.include?("twitter")
-            student_profile[:twitter] = social.attribute("href").value
-          elsif social.attribute("href").value.include?("linkedin")
-            student_profile[:linkedin] = social.attribute("href").value
-          elsif social.attribute("href").value.include?("github")
-            student_profile[:github] = social.attribute("href").value
-          else
-            student_profile[:blog] = social.attribute("href").value
-          end
-        end
-
-        student_profile[:profile_quote] = profile.css("div.main-wrapper.profile .vitals-text-container .profile-quote").text
-        student_profile[:bio] = profile.css("div.main-wrapper.profile .description-holder p").text
-
-        student_profile
+  def add_student_attributes(attributes_hash)
+    attributes_hash.each do |key, value|
+      self.send(("#{key}="), value)
       end
+    self
+  end
+
+  def self.all
+    @@all
+  end
 end
