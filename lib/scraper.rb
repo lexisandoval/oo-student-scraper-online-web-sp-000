@@ -9,7 +9,7 @@ class Scraper
 
     doc.css(".student-card").each do |student|
       students_info = {}
-      students_info[:name] = student.css("student-name").text
+      students_info[:name] = student.css(".student-name").text
       students_info[:location] = student.css("p.student-location").text
       students_info[:profile_url] = student.css("a").attribute("href").value
       students << students_info
