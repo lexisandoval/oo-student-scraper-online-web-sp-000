@@ -4,7 +4,6 @@ require 'pry'
 class Scraper
 
   def self.scrape_index_page(index_url)
-    doc = Nokogiri::HTML(open(index_url))
     students = []
 
     doc.css(".student-card").each do |student|
@@ -18,11 +17,11 @@ class Scraper
   end
 
   def self.scrape_profile_page(profile_url)
-    html = open(profile_url)
-    profile = Nokogiri::HTML(html)
+    doc = Nokogiri::HTML(open(profile_url))
+
     student_profile = {}
 
-    profile.css("div.main-wrapper.profile .social-icon-container a").each do |social|
+    doc.css("div.main-wrapper.profile .social-icon-container a").each do |social|
       if social.attribute("href").value.include?("twitter")
         student_profile[:twitter] = social.attribute("href").value
       elsif social.attribute("href").value.include?("linkedin")
@@ -34,8 +33,8 @@ class Scraper
       end
     end
 
-    student_profile[:profile_quote] = profile.css("div.main-wrapper.profile .vitals-text-container .profile-quote").text
-    student_profile[:bio] = profile.css("div.main-wrapper.profile .description-holder p").text
+    student_profile[:profile_quote] = doc.css("div.main-wrapper.profile .vitals-text-container .profile-quote").text
+    student_profile[:bio] = doc.css("div.main-wrapper.profile .description-holder p").text
 
     student_profile
   end
